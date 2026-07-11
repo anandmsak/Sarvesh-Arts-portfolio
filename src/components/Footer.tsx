@@ -175,7 +175,7 @@ export function Footer() {
                 <span className="hidden text-gold/25 sm:inline">✦</span>
 
                 <span className="whitespace-nowrap text-ivory/45">
-                  Available for stunning portfolios &amp; websites
+                  Available for creating stunning portfolios &amp; websites
                 </span>
 
                 <span className="hidden text-gold/25 sm:inline">✦</span>
