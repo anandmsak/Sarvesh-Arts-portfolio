@@ -488,12 +488,6 @@ function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FCFBF7] p-4 sm:p-10 text-[#3D2B1F]">
-      
-      {/* Smart Responsive Notification Ribbon for Mobile Views */}
-      <div className="block lg:hidden mb-6 p-4 bg-[#800020]/10 border border-[#800020]/30 rounded text-xs font-serif leading-relaxed text-[#800020]">
-        ✨ <span className="font-bold">Recommendation:</span> For configuring large artwork tables, structural data logs, and full studio media updates seamlessly, switching over to a desktop monitor or tablet landscape layout is highly recommended.
-      </div>
-
       <div className="max-w-7xl mx-auto space-y-8">
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#D4AF37]/30 pb-6 gap-4">
@@ -507,14 +501,16 @@ function AdminDashboardPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={onTabChangeHandler} className="w-full">
-          <TabsList className="bg-[#3D2B1F]/5 p-1 mb-6 border border-[#3D2B1F]/10 flex flex-wrap gap-2">
-            <TabsTrigger value="inventory">Artworks Inventory</TabsTrigger>
-            <TabsTrigger value="add-art">＋ Add Artwork</TabsTrigger>
-            <TabsTrigger value="add-temple">＋ Add Temple Project</TabsTrigger>
-            <TabsTrigger value="reviews">💬 Manage Reviews</TabsTrigger>
-            <TabsTrigger value="settings">⚙️ Studio Settings</TabsTrigger>
+          {/* MOBILE OPTIMIZED: Scrolling tab bar setup preventing squish breakages */}
+          <TabsList className="w-full bg-[#3D2B1F]/5 p-1 mb-6 border border-[#3D2B1F]/10 flex flex-nowrap overflow-x-auto justify-start scrollbar-none snap-x gap-1 h-auto min-h-11">
+            <TabsTrigger value="inventory" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">Artworks Inventory</TabsTrigger>
+            <TabsTrigger value="add-art" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">＋ Add Artwork</TabsTrigger>
+            <TabsTrigger value="add-temple" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">＋ Add Temple Project</TabsTrigger>
+            <TabsTrigger value="reviews" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">💬 Manage Reviews</TabsTrigger>
+            <TabsTrigger value="settings" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">⚙️ Studio Settings</TabsTrigger>
           </TabsList>
 
+          {/* TAB 1: Inventory List View */}
           <TabsContent value="inventory" className="space-y-8">
             <Card className="border border-[#D4AF37]/20 bg-white">
               <CardHeader><CardTitle className="font-serif text-[#800020]">Active Gallery Registry</CardTitle></CardHeader>
@@ -522,31 +518,40 @@ function AdminDashboardPage() {
                 {artworks.length === 0 ? (
                   <p className="text-sm text-center text-zinc-400 py-4">No active gallery pieces discovered inside storage registries.</p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Preview</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {artworks.map((art) => (
-                        <TableRow key={art.id}>
-                          <TableCell><img src={art.imageUrl} className="w-10 h-10 object-cover rounded bg-zinc-100" alt="" /></TableCell>
-                          <TableCell className="font-bold text-[#800020]">{art.title}</TableCell>
-                          <TableCell>{art.category}</TableCell>
-                          <TableCell><Badge>{art.status}</Badge></TableCell>
-                          <TableCell className="text-right space-x-2">
-                            <Button size="sm" variant="outline" onClick={() => handleSetHero(art.imageUrl)} className="border-[#D4AF37]">Set Hero</Button>
-                            <Button size="sm" variant="destructive" onClick={() => deleteArtwork(art.id)}>Delete</Button>
-                          </TableCell>
+                  /* MOBILE OPTIMIZED: Responsive horizontal viewport wrapper scrolling container */
+                  <div className="w-full overflow-x-auto rounded-md border border-zinc-100">
+                    <Table className="min-w-[600px]">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-16">Preview</TableHead>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {artworks.map((art) => (
+                          <TableRow key={art.id}>
+                            <TableCell>
+                              <img src={art.imageUrl} className="w-10 h-10 object-cover rounded bg-zinc-50 select-none pointer-events-none" alt="" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} />
+                            </TableCell>
+                            <TableCell className="font-bold text-[#800020] whitespace-nowrap">{art.title}</TableCell>
+                            <TableCell className="whitespace-nowrap">{art.category}</TableCell>
+                            <TableCell>
+                              <Badge variant={art.status === 'Available' ? 'default' : 'secondary'} className="text-[10px] uppercase tracking-wider px-2 py-0.5">
+                                {art.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right space-x-2 whitespace-nowrap">
+                              <Button variant="outline" size="sm" onClick={() => handleSetHero(art.imageUrl)} className="text-xs border-[#D4AF37] text-gold hover:bg-gold/10">Set Hero</Button>
+                              <Button variant="destructive" size="sm" onClick={() => deleteArtwork(art.id)} className="text-xs">Delete</Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -555,286 +560,301 @@ function AdminDashboardPage() {
               <CardHeader><CardTitle className="font-serif text-[#800020]">Active Temple Commission Registry</CardTitle></CardHeader>
               <CardContent>
                 {templeProjects.length === 0 ? (
-                  <p className="text-sm text-center text-zinc-400 py-4">No logged temple records found.</p>
+                  <p className="text-sm text-center text-zinc-400 py-4">No active temple installation project files logged.</p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Image</TableHead>
-                        <TableHead>Location/Title</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {templeProjects.map((proj) => (
-                        <TableRow key={proj.id}>
-                          <TableCell><img src={proj.imageUrl} className="w-12 h-10 object-cover rounded bg-zinc-100" alt="" /></TableCell>
-                          <TableCell className="font-serif font-medium">{proj.title}</TableCell>
-                          <TableCell className="text-right">
-                            <Button size="sm" variant="destructive" onClick={() => deleteTempleProject(proj.id)}>Delete</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="add-art">
-            <Card className="border border-[#D4AF37]/20 bg-white">
-              <CardHeader><CardTitle className="font-serif text-[#800020]">Publish New Masterpiece</CardTitle></CardHeader>
-              <CardContent>
-                <form onSubmit={artworkForm.handleSubmit(onAddArtwork)} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label htmlFor="title">Title *</Label>
-                      <Input id="title" required {...artworkForm.register('title')} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label>Category *</Label>
-                      <Select required onValueChange={(val) => artworkForm.setValue('category', val)}>
-                        <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Temple Paintings">Temple Paintings</SelectItem>
-                          <SelectItem value="Pen/Pencil Drawings">Pen/Pencil Drawings</SelectItem>
-                          <SelectItem value="Acrylic Paintings">Acrylic Paintings</SelectItem>
-                          <SelectItem value="Work in Progress">Work in Progress</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Medium (e.g., Ink)" required {...artworkForm.register('medium')} />
-                    <Input placeholder="Dimensions" required {...artworkForm.register('dimensions')} />
-                    <Input type="number" defaultValue={2026} required {...artworkForm.register('year', { valueAsNumber: true })} />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Select required onValueChange={(val: any) => artworkForm.setValue('status', val)}>
-                      <SelectTrigger><SelectValue placeholder="Select Status" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Available">Available</SelectItem>
-                        <SelectItem value="Commissioned">Commissioned</SelectItem>
-                        <SelectItem value="Sold">Sold</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input id="artFile" type="file" required className="cursor-pointer" />
-                  </div>
-                  <Textarea placeholder="Description Details..." {...artworkForm.register('description')} />
-                  <Textarea placeholder="Traditional Śilpa Śāstra Significance Rules..." {...artworkForm.register('traditionalSignificance')} />
-                  <Button type="submit" className="bg-[#800020] text-white font-serif w-full">Deploy Artwork Online</Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="add-temple">
-            <Card className="border border-[#D4AF37]/20 bg-white">
-              <CardHeader><CardTitle className="font-serif text-[#800020]">Log Temple Murals & Commissions</CardTitle></CardHeader>
-              <CardContent>
-                <form onSubmit={templeForm.handleSubmit(onAddTemple)} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input placeholder="Project Title / Shrine Location *" required {...templeForm.register('title')} />
-                    <Input id="templeFile" type="file" required className="cursor-pointer" />
-                  </div>
-                  <Textarea placeholder="Describe the installation scope, iconography context, and community process..." required {...templeForm.register('description')} />
-                  <Button type="submit" className="bg-[#800020] text-white font-serif w-full">Publish Temple Record</Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="reviews">
-            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1.8fr] gap-8">
-              <Card className="border border-[#D4AF37]/20 bg-white h-fit">
-                <CardHeader>
-                  <CardTitle className="font-serif text-[#800020]">Log Client Review / Screenshot</CardTitle>
-                  <CardDescription>Upload WhatsApp feedback screenshots or log typed phone-call words.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={reviewForm.handleSubmit(onAddReview)} className="space-y-4">
-                    <div className="space-y-1">
-                      <Label>Client Name / Altar Location</Label>
-                      <Input placeholder="e.g., Sridhar from Chennai" required {...reviewForm.register('client_name')} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label>Feedback Input Format</Label>
-                      <Select value={selectedReviewType} onValueChange={(val: any) => setSelectedReviewType(val)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Text">Typed Text Quote (Direct/Call)</SelectItem>
-                          <SelectItem value="Screenshot">WhatsApp Chat Screenshot Image</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {selectedReviewType === 'Text' ? (
-                      <div className="space-y-1">
-                        <Label>Review Narrative Copy</Label>
-                        <Textarea placeholder="Paste the feedback message or type their spoken statement directly here..." required rows={4} {...reviewForm.register('review_text')} />
-                      </div>
-                    ) : (
-                      <div className="space-y-1">
-                        <Label>Select WhatsApp Screenshot Image File</Label>
-                        <Input id="reviewFile" type="file" className="cursor-pointer bg-white" required />
-                      </div>
-                    )}
-
-                    <Button type="submit" className="w-full bg-[#800020] text-white font-serif">Publish Review Entry</Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-[#D4AF37]/20 bg-white">
-                <CardHeader><CardTitle className="font-serif text-[#800020]">Active Review Inventory</CardTitle></CardHeader>
-                <CardContent>
-                  {reviews.length === 0 ? (
-                    <p className="text-sm text-center text-zinc-400 py-4">No logged client testimonials found in cloud storage buckets.</p>
-                  ) : (
-                    <Table>
+                  /* MOBILE OPTIMIZED: Scroll layer isolation wrapper */
+                  <div className="w-full overflow-x-auto rounded-md border border-zinc-100">
+                    <Table className="min-w-[500px]">
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Client</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead>Content Preview</TableHead>
-                          <TableHead className="text-right">Action</TableHead>
+                          <TableHead className="w-16">Image</TableHead>
+                          <TableHead>Project Title</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {reviews.map((rev) => (
-                          <TableRow key={rev.id}>
-                            <TableCell className="font-serif font-bold text-primary">{rev.client_name}</TableCell>
-                            <TableCell><Badge variant="outline">{rev.review_type}</Badge></TableCell>
-                            <TableCell className="max-w-[15rem] truncate text-xs font-serif italic">
-                              {rev.review_type === 'Text' ? rev.review_text : (
-                                <img src={rev.image_url} className="w-12 h-10 object-cover border rounded" alt="" />
-                              )}
+                        {templeProjects.map((proj) => (
+                          <TableRow key={proj.id}>
+                            <TableCell>
+                              <img src={proj.imageUrl} className="w-10 h-10 object-cover rounded bg-zinc-50 select-none pointer-events-none" alt="" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} />
                             </TableCell>
-                            <TableCell className="text-right">
-                              <Button size="sm" variant="destructive" onClick={() => deleteReview(rev.id)}>Delete</Button>
+                            <TableCell className="font-bold text-[#800020] whitespace-nowrap">{proj.title}</TableCell>
+                            <TableCell className="max-w-xs truncate text-zinc-600">{proj.description}</TableCell>
+                            <TableCell className="text-right whitespace-nowrap">
+                              <Button variant="destructive" size="sm" onClick={() => deleteTempleProject(proj.id)} className="text-xs">Delete</Button>
                             </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* TAB 2: Add Artwork Form */}
+          <TabsContent value="add-art">
+            <Card className="border border-[#D4AF37]/20 bg-white max-w-2xl mx-auto">
+              <CardHeader><CardTitle className="font-serif text-[#800020]">Publish New Masterpiece Entry</CardTitle></CardHeader>
+              <CardContent>
+                <form onSubmit={artworkForm.handleSubmit(onAddArtwork)} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Artwork Title</Label>
+                      <Input id="title" {...artworkForm.register('title')} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="category">Category</Label>
+                      <Input id="category" placeholder="e.g. Temple Paintings, Pen/Pencil Drawings" {...artworkForm.register('category')} required />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="medium">Medium</Label>
+                      <Input id="medium" placeholder="e.g. Natural Pigments on Canvas" {...artworkForm.register('medium')} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dimensions">Dimensions</Label>
+                      <Input id="dimensions" placeholder="e.g. 24 x 36 inches" {...artworkForm.register('dimensions')} required />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="year">Creation Year</Label>
+                      <Input id="year" type="number" defaultValue={2026} {...artworkForm.register('year', { valueAsNumber: true })} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="status">Collection Status</Label>
+                      <select id="status" {...artworkForm.register('status')} className="w-full rounded-md border border-input bg-background px-3 h-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#800020]">
+                        <option value="Available">Available</option>
+                        <option value="Commissioned">Commissioned</option>
+                        <option value="Sold">Sold</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Creative Narrative Description</Label>
+                    <Textarea id="description" {...artworkForm.register('description')} rows={3} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="traditionalSignificance">Traditional Iconographic Significance</Label>
+                    <Textarea id="traditionalSignificance" {...artworkForm.register('traditionalSignificance')} rows={3} required />
+                  </div>
+                  <div className="space-y-2 border-t border-zinc-100 pt-4">
+                    <Label htmlFor="artFile" className="text-gold font-bold">Upload Source Master Image Asset</Label>
+                    <Input id="artFile" type="file" accept="image/*" className="cursor-pointer" required />
+                  </div>
+                  <Button type="submit" className="w-full bg-[#800020] hover:bg-[#600018] text-white font-serif tracking-wider uppercase text-xs py-5 mt-2">Publish Asset Records</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* TAB 3: Add Temple Project Form */}
+          <TabsContent value="add-temple">
+            <Card className="border border-[#D4AF37]/20 bg-white max-w-2xl mx-auto">
+              <CardHeader><CardTitle className="font-serif text-[#800020]">Archive Installation Log Record</CardTitle></CardHeader>
+              <CardContent>
+                <form onSubmit={templeForm.handleSubmit(onAddTemple)} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="tTitle">Project / Temple Title Name</Label>
+                    <Input id="tTitle" {...templeForm.register('title')} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tDesc">Structural Installation Narrative</Label>
+                    <Textarea id="tDesc" {...templeForm.register('description')} rows={4} required />
+                  </div>
+                  <div className="space-y-2 border-t border-zinc-100 pt-4">
+                    <Label htmlFor="templeFile" className="text-gold font-bold">Upload Installation Image</Label>
+                    <Input id="templeFile" type="file" accept="image/*" className="cursor-pointer" required />
+                  </div>
+                  <Button type="submit" className="w-full bg-[#800020] hover:bg-[#600018] text-white font-serif tracking-wider uppercase text-xs py-5 mt-2">Save Temple Record</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* TAB 4: Manage Client Reviews Logs */}
+          <TabsContent value="reviews" className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 items-start">
+              <Card className="border border-[#D4AF37]/20 bg-white">
+                <CardHeader><CardTitle className="font-serif text-[#800020]">Log Client Appreciations</CardTitle></CardHeader>
+                <CardContent>
+                  <form onSubmit={reviewForm.handleSubmit(onAddReview)} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Feedback Asset Presentation Blueprint Type</Label>
+                      <div className="flex gap-4 border border-zinc-100 p-2 rounded bg-zinc-50/50">
+                        <label className="flex items-center gap-2 text-sm font-serif cursor-pointer">
+                          <input type="radio" name="revType" checked={selectedReviewType === 'Text'} onChange={() => setSelectedReviewType('Text')} className="accent-[#800020]" />
+                          Text Message Devotion
+                        </label>
+                        <label className="flex items-center gap-2 text-sm font-serif cursor-pointer">
+                          <input type="radio" name="revType" checked={selectedReviewType === 'Screenshot'} onChange={() => setSelectedReviewType('Screenshot')} className="accent-[#800020]" />
+                          WhatsApp Conversation File
+                        </label>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="clientName">Devotee / Client Name Reference</Label>
+                      <Input id="clientName" {...reviewForm.register('client_name')} required />
+                    </div>
+                    {selectedReviewType === 'Text' ? (
+                      <div className="space-y-2">
+                        <Label htmlFor="reviewText">Testimonial Text Context Message</Label>
+                        <Textarea id="reviewText" {...reviewForm.register('review_text')} rows={4} placeholder="Type the review text exactly..." required />
+                      </div>
+                    ) : (
+                      <div className="space-y-2 border-t border-zinc-100 pt-4">
+                        <Label htmlFor="reviewFile" className="text-gold font-bold">Select Conversation Screenshot Upload</Label>
+                        <Input id="reviewFile" type="file" accept="image/*" className="cursor-pointer" required />
+                      </div>
+                    )}
+                    <Button type="submit" className="w-full bg-[#800020] hover:bg-[#600018] text-white font-serif tracking-wider uppercase text-xs py-5 mt-2">Record Review Log</Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-[#D4AF37]/20 bg-white">
+                <CardHeader><CardTitle className="font-serif text-[#800020]">Stored Testimonials Registry</CardTitle></CardHeader>
+                <CardContent>
+                  {reviews.length === 0 ? (
+                    <p className="text-sm text-center text-zinc-400 py-4">No logged devotee feedback entries detected inside database pipelines.</p>
+                  ) : (
+                    /* MOBILE OPTIMIZED: Protected row container view layer block */
+                    <div className="w-full overflow-x-auto rounded-md border border-zinc-100">
+                      <Table className="min-w-[450px]">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Client</TableHead>
+                            <TableHead>Presentation Type</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {reviews.map((rev) => (
+                            <TableRow key={rev.id}>
+                              <TableCell className="font-bold text-[#800020] whitespace-nowrap">{rev.client_name}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-[10px] tracking-wider uppercase border-zinc-300">
+                                  {rev.review_type}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right whitespace-nowrap">
+                                <Button variant="destructive" size="sm" onClick={() => deleteReview(rev.id)} className="text-xs">Wipe Record</Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   )}
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
+          {/* TAB 5: Live Studio Layout Global Controls Settings */}
           <TabsContent value="settings">
-            <Card className="border border-[#D4AF37]/20 bg-white">
-              <CardHeader><CardTitle className="font-serif text-[#800020]">Global Profile & Brand Identity Customization</CardTitle></CardHeader>
+            <Card className="border border-[#D4AF37]/20 bg-white max-w-3xl mx-auto">
+              <CardHeader><CardTitle className="font-serif text-[#800020]">Global Branding &amp; Typography Identity Settings</CardTitle></CardHeader>
               <CardContent>
                 <form onSubmit={settingsForm.handleSubmit(onUpdateSettings)} className="space-y-6">
-                  <div className="p-4 bg-zinc-50 rounded-sm border space-y-4">
-                    <h3 className="font-serif font-bold text-sm text-[#800020]">🎨 Corporate Assets & Artist Portrait</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="flex items-center gap-4">
-                        {settings?.logo_url && (
-                          <img src={settings.logo_url} className="h-12 w-12 object-cover rounded-full border border-gold/40 bg-white shrink-0" alt="" />
-                        )}
-                        <div className="space-y-1 w-full">
-                          <Label htmlFor="logoFile">Upload Logo File</Label>
-                          <Input id="logoFile" type="file" className="cursor-pointer bg-white" />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        {settings?.artist_image_url && (
-                          <img src={settings.artist_image_url} className="h-12 w-12 object-cover rounded border border-gold/40 bg-white shrink-0" alt="" />
-                        )}
-                        <div className="space-y-1 w-full">
-                          <Label htmlFor="artistFile">Upload Artist Image File</Label>
-                          <Input id="artistFile" type="file" className="cursor-pointer bg-white" />
-                        </div>
-                      </div>
+                  <div className="p-4 bg-amber-50/50 border border-[#D4AF37]/20 rounded-md space-y-4">
+                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/20 pb-1">🔐 Master Access Configuration</h3>
+                    <div className="space-y-2">
+                      <Label htmlFor="admin_passkey">Secure Control Dashboard CMS Passkey Token</Label>
+                      <Input id="admin_passkey" {...settingsForm.register('admin_passkey')} required />
                     </div>
                   </div>
                   
-                  <div className="p-4 bg-zinc-50 rounded-sm border space-y-4">
-                    <h3 className="font-serif font-bold text-sm text-[#800020]">🔐 Security Parameters</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <Label>Change Admin Passkey</Label>
-                        <Input type="text" {...settingsForm.register('admin_passkey')} required />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-zinc-50 rounded-sm border space-y-4">
-                    <h3 className="font-serif font-bold text-sm text-[#800020]">📞 Channel Integrations & Routing Numbers</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-1">
-                        <Label>Studio Communication Email</Label>
-                        <Input type="email" {...settingsForm.register('contact_email')} required />
-                      </div>
-                      <div className="space-y-1">
-                        <Label>Instagram Username Display</Label>
-                        <Input type="text" {...settingsForm.register('instagram_username')} required />
-                      </div>
-                      <div className="space-y-1">
-                        <Label>Instagram Link URL</Label>
-                        <Input type="url" {...settingsForm.register('instagram_url')} required />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <Label>WhatsApp Target ID/Number</Label>
-                        <Input type="text" {...settingsForm.register('whatsapp_number')} placeholder="e.g., 916374933410" required />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-zinc-50 rounded-sm border space-y-4">
-                    <h3 className="font-serif font-bold text-sm text-[#800020]">🎨 Hero Section Headlines & Slogans</h3>
-                    <div className="space-y-2">
-                      <Label>Hero Section Main Title Statement</Label>
-                      <Input {...settingsForm.register('hero_slogan_title')} required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Hero Section Sub-Paragraph Statement Context</Label>
-                      <Textarea {...settingsForm.register('hero_slogan_sub')} rows={3} required />
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-zinc-50 rounded-sm border space-y-4">
-                    <h3 className="font-serif font-bold text-sm text-[#800020]">📜 About Page Content Configuration</h3>
-                    <div className="space-y-3">
-                      <Label>Main Section Title Heading</Label>
-                      <Input {...settingsForm.register('about_heading')} required />
-                    </div>
-                    <div className="space-y-3">
-                      <Label>Biography Paragraph 1 (Introduction)</Label>
-                      <Textarea {...settingsForm.register('about_p1')} rows={3} required />
-                    </div>
-                    <div className="space-y-3">
-                      <Label>Biography Paragraph 2 (Specialization Details)</Label>
-                      <Textarea {...settingsForm.register('about_p2')} rows={3} required />
-                    </div>
-                    <div className="space-y-3">
-                      <Label>Core Devotional Philosophy Quote</Label>
-                      <Textarea {...settingsForm.register('about_quote')} rows={3} required />
-                    </div>
-                    <div className="space-y-3">
-                      <Label>Biography Paragraph 3 (Closing Vision)</Label>
-                      <Textarea {...settingsForm.register('about_p3')} rows={3} required />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/20 pb-1">📞 Studio Communication Pipelines Links</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label>Mission Statement</Label>
-                        <Textarea {...settingsForm.register('about_mission')} rows={4} required />
+                        <Label htmlFor="contact_email">Public Contact Email</Label>
+                        <Input id="contact_email" {...settingsForm.register('contact_email')} required />
                       </div>
                       <div className="space-y-2">
-                        <Label>Vision Statement</Label>
-                        <Textarea {...settingsForm.register('about_vision')} rows={4} required />
+                        <Label htmlFor="instagram_username">Instagram Handle Badge</Label>
+                        <Input id="instagram_username" placeholder="@srisarvesanarts" {...settingsForm.register('instagram_username')} required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="instagram_url">Direct Instagram URL link</Label>
+                        <Input id="instagram_url" {...settingsForm.register('instagram_url')} required />
+                      </div>
+                    </div>
+                    <div className="space-y-2 max-w-xs">
+                      <Label htmlFor="whatsapp_number">WhatsApp Phone (With Country Code)</Label>
+                      <Input id="whatsapp_number" placeholder="e.g. 916374933410" {...settingsForm.register('whatsapp_number')} required />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 border-t border-zinc-100 pt-4">
+                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/20 pb-1">🎨 Landing Hero Slogan Scriptor Lines</h3>
+                    <div className="space-y-2">
+                      <Label htmlFor="hero_slogan_title">Main Hero Banner Heading Title</Label>
+                      <Input id="hero_slogan_title" {...settingsForm.register('hero_slogan_title')} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="hero_slogan_sub">Main Hero Explanatory Subtext Paragraph</Label>
+                      <Textarea id="hero_slogan_sub" {...settingsForm.register('hero_slogan_sub')} rows={3} required />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 border-t border-zinc-100 pt-4">
+                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/20 pb-1">🕉️ About Page Scriptural Narrative Context</h3>
+                    <div className="space-y-2">
+                      <Label htmlFor="about_heading">Main Biography Chapter Heading</Label>
+                      <Input id="about_heading" {...settingsForm.register('about_heading')} required />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="about_p1">Biography Narrative Paragraph Line 1</Label>
+                        <Textarea id="about_p1" {...settingsForm.register('about_p1')} rows={4} required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="about_p2">Biography Narrative Paragraph Line 2</Label>
+                        <Textarea id="about_p2" {...settingsForm.register('about_p2')} rows={4} required />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="about_quote">Featured Devotional Callout Quote Block</Label>
+                      <Textarea id="about_quote" {...settingsForm.register('about_quote')} rows={3} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="about_p3">Concluding Heritage Philosophy Paragraph Line 3</Label>
+                      <Textarea id="about_p3" {...settingsForm.register('about_p3')} rows={3} required />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="about_mission">Studio Mission Declaration</Label>
+                        <Textarea id="about_mission" {...settingsForm.register('about_mission')} rows={3} required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="about_vision">Studio Vision Declaration</Label>
+                        <Textarea id="about_vision" {...settingsForm.register('about_vision')} rows={3} required />
                       </div>
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full bg-[#800020] hover:bg-[#600018] text-white font-serif">
-                    Save and Deploy Updates Globally
+                  <div className="space-y-4 border-t border-zinc-100 pt-4 bg-zinc-50 p-4 rounded-md">
+                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/10 pb-1 text-gold">🖼️ Core Graphics Identity Image Files Updates</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="logoFile" className="text-xs font-bold text-zinc-600">Studio Header Round Logo Branding Asset</Label>
+                        <Input id="logoFile" type="file" accept="image/*" className="cursor-pointer bg-white" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="artistFile" className="text-xs font-bold text-zinc-600">About Narrative Section Artist Portrait Asset</Label>
+                        <Input id="artistFile" type="file" accept="image/*" className="cursor-pointer bg-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full bg-[#800020] hover:bg-[#600018] text-white font-serif tracking-wider uppercase text-xs py-5">
+                    Save Global Control Configurations
                   </Button>
                 </form>
               </CardContent>
@@ -843,29 +863,18 @@ function AdminDashboardPage() {
         </Tabs>
       </div>
 
-      <Dialog open={blocker.status === 'blocked'} onOpenChange={(open) => !open && blocker.reset?.()}>
-        <DialogContent className="max-w-md bg-white border border-[#D4AF37]/40 shadow-2xl p-6 text-center rounded-md font-serif">
-          <DialogHeader className="space-y-2 flex flex-col items-center justify-center text-center">
-            <span className="font-display text-4xl text-gold block mx-auto">॥ ॐ ॥</span>
-            <DialogTitle className="text-xl text-[#800020] text-center tracking-wide">Are you sure you want to quit the admin page?</DialogTitle>
-            <DialogDescription className="text-xs text-[#3D2B1F]/70 text-center italic mt-2">
-              Any unsaved adjustments made to settings profiles, artwork registries, or configuration panels will be lost.
+      {/* Leave Blocker Confirmation Popup Modal Dialog */}
+      <Dialog open={blocker.state === 'blocked'} onOpenChange={(o) => !o && blocker.reset?.()}>
+        <DialogContent className="border-gold/30 bg-white">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-[#800020]">Exit Authorized Workspace Area?</DialogTitle>
+            <DialogDescription className="font-serif mt-2">
+              Leaving the dashboard locks active communication lines pipelines. Ensure settings are saved before exiting.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="mt-6 flex flex-row items-center justify-center gap-4 sm:justify-center w-full">
-            <Button 
-              variant="outline" 
-              onClick={() => blocker.reset?.()} 
-              className="border-[#3D2B1F]/30 hover:bg-zinc-50 font-serif px-6 py-2 tracking-wider text-xs uppercase text-[#3D2B1F]"
-            >
-              Stay Here
-            </Button>
-            <Button 
-              onClick={() => blocker.proceed?.()} 
-              className="bg-[#800020] hover:bg-[#600018] text-white font-serif px-6 py-2 tracking-wider text-xs uppercase"
-            >
-              Confirm Exit
-            </Button>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="outline" onClick={() => blocker.reset?.()} className="font-serif">Stay Inside Dashboard</Button>
+            <Button variant="destructive" onClick={() => blocker.proceed?.()} className="font-serif">Confirm Disconnect</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
