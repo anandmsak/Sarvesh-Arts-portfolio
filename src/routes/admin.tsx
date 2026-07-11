@@ -488,6 +488,12 @@ function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FCFBF7] p-4 sm:p-10 text-[#3D2B1F]">
+      
+      {/* Smart Responsive Notification Ribbon for Mobile Views (Preserved Exactly) */}
+      <div className="block lg:hidden mb-6 p-4 bg-[#800020]/10 border border-[#800020]/30 rounded text-xs font-serif leading-relaxed text-[#800020]">
+        ✨ <span className="font-bold">Recommendation:</span> For configuring large artwork tables, structural data logs, and full studio media updates seamlessly, switching over to a desktop monitor or tablet landscape layout is highly recommended.
+      </div>
+
       <div className="max-w-7xl mx-auto space-y-8">
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#D4AF37]/30 pb-6 gap-4">
@@ -501,7 +507,7 @@ function AdminDashboardPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={onTabChangeHandler} className="w-full">
-          {/* MOBILE OPTIMIZED: Scrolling tab bar setup preventing squish breakages */}
+          {/* MOBILE OPTIMIZED: Horizontal scroll bar that fits buttons perfectly without squeezing */}
           <TabsList className="w-full bg-[#3D2B1F]/5 p-1 mb-6 border border-[#3D2B1F]/10 flex flex-nowrap overflow-x-auto justify-start scrollbar-none snap-x gap-1 h-auto min-h-11">
             <TabsTrigger value="inventory" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">Artworks Inventory</TabsTrigger>
             <TabsTrigger value="add-art" className="snap-start whitespace-nowrap px-4 py-2 text-xs sm:text-sm">＋ Add Artwork</TabsTrigger>
@@ -518,7 +524,7 @@ function AdminDashboardPage() {
                 {artworks.length === 0 ? (
                   <p className="text-sm text-center text-zinc-400 py-4">No active gallery pieces discovered inside storage registries.</p>
                 ) : (
-                  /* MOBILE OPTIMIZED: Responsive horizontal viewport wrapper scrolling container */
+                  /* MOBILE OPTIMIZED: Data table container scroll space wrapper */
                   <div className="w-full overflow-x-auto rounded-md border border-zinc-100">
                     <Table className="min-w-[600px]">
                       <TableHeader>
@@ -685,7 +691,7 @@ function AdminDashboardPage() {
                   <form onSubmit={reviewForm.handleSubmit(onAddReview)} className="space-y-4">
                     <div className="space-y-2">
                       <Label>Feedback Asset Presentation Blueprint Type</Label>
-                      <div className="flex gap-4 border border-zinc-100 p-2 rounded bg-zinc-50/50">
+                      <div className="flex flex-wrap gap-4 border border-zinc-100 p-2 rounded bg-zinc-50/50">
                         <label className="flex items-center gap-2 text-sm font-serif cursor-pointer">
                           <input type="radio" name="revType" checked={selectedReviewType === 'Text'} onChange={() => setSelectedReviewType('Text')} className="accent-[#800020]" />
                           Text Message Devotion
@@ -804,7 +810,7 @@ function AdminDashboardPage() {
                   </div>
 
                   <div className="space-y-4 border-t border-zinc-100 pt-4">
-                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/20 pb-1">🕉️ About Page Scriptural Narrative Context</h3>
+                    <h3 className="font-serif font-bold text-sm text-[#800020] border-b border-gold/20 pb-1">🖼️ About Page Scriptural Narrative Context</h3>
                     <div className="space-y-2">
                       <Label htmlFor="about_heading">Main Biography Chapter Heading</Label>
                       <Input id="about_heading" {...settingsForm.register('about_heading')} required />
